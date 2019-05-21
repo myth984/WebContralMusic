@@ -1,0 +1,209 @@
+﻿<!doctype html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>音乐遥控器</title>
+
+    <style>
+        body {
+            background-color: #37325f;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .music-box {
+            overflow: hidden;
+            margin: 100px auto;
+            width: 300px;
+            height: auto;
+            border-radius: 10px;
+            background: #0a0a0a;
+            border: 5px solid #000;
+        }
+
+        .music-list {
+            overflow: hidden;
+            margin: 0 auto;
+            padding: 30px 15px;
+            border-radius: 10px;
+            border: 5px solid #fff;
+        }
+
+        .music-list li {
+            overflow: hidden;
+            margin: 0 10px 10px;
+            width: calc(50% - 20px);
+            float: left;
+        }
+
+        .music-list .music-name {
+            overflow: hidden;
+            margin: 0 auto;
+            width: 100%;
+            height: 22px;
+        }
+
+        .music-list .music-name p {
+            overflow: hidden;
+            display: table;
+            margin: 0 auto;
+            width: 100%;
+            height: 22px;
+            line-height: 22px;
+            font-size: 16px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .video-img-mask {
+            overflow: hidden;
+            margin: 0 auto;
+            width: 72px;
+            height: 72px;
+        }
+
+        .music-name p.on {
+            -webkit-animation: tada 1.5s .2s ease both infinite;
+            -moz-animation: tada 1.5s .2s ease both infinite;
+        }
+
+        @-webkit-keyframes tada {
+            0% {
+                -webkit-transform: scale(1)
+            }
+            10%, 20% {
+                -webkit-transform: scale(0.9) rotate(-3deg)
+            }
+            30%, 50%, 70%, 90% {
+                -webkit-transform: scale(1.1) rotate(3deg)
+            }
+            40%, 60%, 80% {
+                -webkit-transform: scale(1.1) rotate(-3deg)
+            }
+            100% {
+                -webkit-transform: scale(1) rotate(0)
+            }
+        }
+
+        @-moz-keyframes tada {
+            0% {
+                -moz-transform: scale(1)
+            }
+            10%, 20% {
+                -moz-transform: scale(0.9) rotate(-3deg)
+            }
+            30%, 50%, 70%, 90% {
+                -moz-transform: scale(1.1) rotate(3deg)
+            }
+            40%, 60%, 80% {
+                -moz-transform: scale(1.1) rotate(-3deg)
+            }
+            100% {
+                -moz-transform: scale(1) rotate(0)
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="music-box">
+    <ul class="music-list">
+
+        <li>
+            <div class="video-img-mask">
+                <img src="images/播放.png" class="video-iocn" onclick="ctrl('pause');">
+            </div>
+            <div class="music-name"><p>播放</p></div>
+        </li>
+        <li>
+            <div class="video-img-mask">
+                <img src="images/未喜欢.png" onclick="ctrl('loveThis');">
+            </div>
+            <div class="music-name"><p>喜欢</p></div>
+        </li>
+        <li>
+            <div class="video-img-mask">
+                <img src="images/上一首.png" onclick="ctrl('preSong');">
+            </div>
+            <div class="music-name"><p>上一曲</p></div>
+        </li>
+        <li>
+            <div class="video-img-mask">
+                <img src="images/下一首.png" onclick="ctrl('nextSong');">
+            </div>
+            <div class="music-name"><p>下一曲</p></div>
+        </li>
+        <li>
+            <div class="video-img-mask">
+                <img src="images/加.png" onclick="ctrl('upVoice');">
+            </div>
+            <div class="music-name"><p>增大声音</p></div>
+        </li>
+        <li>
+            <div class="video-img-mask">
+                <img src="images/减.png" onclick="ctrl('downVoice');">
+            </div>
+            <div class="music-name"><p>减小声音</p></div>
+        </li>
+    </ul>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script>
+    $(function () {
+        //jq 转js 控制暂停或播放切换
+        // 获取所有audios
+        var audios = document.getElementsByTagName("audio");
+
+        // 暂停函数
+        function pauseAll() {
+            var self = this;
+            [].forEach.call(audios, function (i) {
+                // 将audios中其他的audio全部暂停
+                i !== self && i.pause();
+            })
+        }
+
+        // 给play事件绑定暂停函数
+        [].forEach.call(audios, function (i) {
+            i.addEventListener("play", pauseAll.bind(i));
+        });
+        //点击切换播放
+        $(".video-img-mask").click(function () {
+            if (!$(this).hasClass("video-img-paly")) {//如果当前播放
+                $('.video-img-mask').removeClass("video-img-paly");
+                $('.audio-iocn').attr('src', 'images/播放.png'); //播放图片
+                $('.video-iocn').attr('src', 'images/播放.png'); //播放图片
+                $(this).addClass("video-img-paly");
+                $('.music-name p').removeClass("on");
+                $(this).parents('li').find('.music-name p').addClass("on");
+                $(this).find('.audio-iocn').attr('src', 'images/暂停.png');  //暂停图片
+                $(this).find('.video-iocn').attr('src', 'images/暂停.png');  //暂停图片
+                $(this).find('.audio').get(0).play();  //开始播
+            } else { //如果当前暂停
+                $(this).removeClass("video-img-paly");
+                $('.music-name p').removeClass("on");
+                $(this).find('.audio-iocn').attr('src', 'images/播放.png'); //播放图片
+                $(this).find('.video-iocn').attr('src', 'images/播放.png');  //播放图片
+                $(this).find('.audio').get(0).pause();  //开始播放
+            }
+        })
+    });
+
+    function ctrl(what) {
+        $.ajax({
+                // type: "post",
+                url: "/"+what
+            }
+        )
+    }
+</script>
+</body>
+</html>
